@@ -93,7 +93,7 @@
         <ul class="list-unstyled components hidden" id="menu-admin">
             <li><a onclick="loadPage('admin-home')" class="nav-link active"><i class="fas fa-home me-3"></i>Dashboard</a></li>
             <li><a onclick="loadPage('admin-users')" class="nav-link"><i class="fas fa-users me-3"></i>Data Peserta</a></li>
-            <li><a onclick="loadPage('admin-ujian')" class="nav-link"><i class="fas fa-calendar-alt me-3"></i>Bank Soal CAT BCKS</a></li>
+            <li><a onclick="loadPage('admin-ujian')" class="nav-link"><i class="fas fa-calendar-alt me-3"></i>Bank Soal TES BCKS</a></li>
             <li><a onclick="loadPage('hasil-rekap')" class="nav-link"><i class="fas fa-chart-bar me-3"></i>Hasil Nilai</a></li>
             <li><a onclick="loadPage('guru-monitoring')" class="nav-link"><i class="fas fa-tv me-3"></i>Live Monitor</a></li>
             <li><a onclick="loadPage('admin-administrasi')" class="nav-link text-info"><i class="fas fa-print me-3"></i>Administrasi</a></li>
@@ -103,7 +103,7 @@
         <ul class="list-unstyled components hidden" id="menu-guru">
             <li><a onclick="loadPage('admin-home')" class="nav-link active"><i class="fas fa-home me-3"></i>Dashboard</a></li>
             <li><a onclick="loadPage('admin-users')" class="nav-link"><i class="fas fa-users me-3"></i>Data Peserta</a></li>
-            <li><a onclick="loadPage('admin-ujian')" class="nav-link"><i class="fas fa-file-alt me-3"></i>Bank Soal CAT BCKS</a></li>
+            <li><a onclick="loadPage('admin-ujian')" class="nav-link"><i class="fas fa-file-alt me-3"></i>Bank Soal TES BCKS</a></li>
             <li><a onclick="loadPage('hasil-rekap')" class="nav-link"><i class="fas fa-poll me-3"></i>Hasil Nilai</a></li>
             <li><a onclick="loadPage('guru-monitoring')" class="nav-link"><i class="fas fa-desktop me-3"></i>Live Monitor</a></li>
             <li><a onclick="loadPage('admin-administrasi')" class="nav-link text-info"><i class="fas fa-print me-3"></i>Administrasi</a></li>
@@ -130,12 +130,12 @@
     </div>
 </div>
 
-<!-- TAMPILAN UJIAN CAT BCKS -->
+<!-- TAMPILAN UJIAN TES BCKS -->
 <div id="view-exam" class="hidden">
     <div class="exam-header">
         <div class="d-flex align-items-center">
             <i class="fas fa-graduation-cap me-2 fs-4 text-warning"></i>
-            <div class="d-none d-md-block"><h5 class="fw-bold m-0">Aplikasi CAT BCKS</h5></div>
+            <div class="d-none d-md-block"><h5 class="fw-bold m-0">Aplikasi TES BCKS</h5></div>
         </div>
         <div class="d-flex align-items-center gap-2">
             <h6 class="fw-bold m-0 text-white" id="do-exam-title">User</h6>
@@ -183,13 +183,13 @@
                     
                     <div class="mb-3">
                         <label class="small fw-bold text-muted mb-1">Judul Ujian</label>
-                        <input type="text" name="judul" id="ex-judul" class="form-control rounded-3" placeholder="CAT BCKS" required>
+                        <input type="text" name="judul" id="ex-judul" class="form-control rounded-3" placeholder="TES BCKS" required>
                     </div>
                     
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="small fw-bold text-muted mb-1">Mata Pelajaran</label>
-                            <input type="text" name="mapel" id="ex-mapel" class="form-control rounded-3" placeholder="CAT BCKS" required>
+                            <input type="text" name="mapel" id="ex-mapel" class="form-control rounded-3" placeholder="TES BCKS" required>
                         </div>
                         <div class="col-md-6">
                             <label class="small fw-bold text-muted mb-1">Durasi (Menit)</label>
@@ -502,7 +502,7 @@ function renderContent(page) {
             let mapelFilterOptions = `<option value="">Semua Mapel</option>` + uniqueMapels.map(m => `<option value="${m}">${m}</option>`).join('');
             window.allStudentRanks = studentRanksData;
             extraWidget = `
-            <div class="col-md-7"><div class="card shadow-sm border-0 rounded-4 h-100"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold text-success m-0"><i class="fas fa-medal me-2"></i>Peringkat Peserta (${user.Sekolah})</h5><select id="filter-dash-mapel" class="form-select form-select-sm w-auto rounded-pill border-success shadow-sm" onchange="filterDashStudentRanks()">${mapelFilterOptions}</select></div><div class="table-responsive" style="max-height: 300px; overflow-y: auto;"><table class="table table-sm table-hover"><thead><tr class="table-light"><th>Mapel CAT BCKS</th><th>Nama</th><th>Skor</th></tr></thead><tbody id="dash-student-tbody"></tbody></table></div></div></div></div>`;
+            <div class="col-md-7"><div class="card shadow-sm border-0 rounded-4 h-100"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold text-success m-0"><i class="fas fa-medal me-2"></i>Peringkat Peserta (${user.Sekolah})</h5><select id="filter-dash-mapel" class="form-select form-select-sm w-auto rounded-pill border-success shadow-sm" onchange="filterDashStudentRanks()">${mapelFilterOptions}</select></div><div class="table-responsive" style="max-height: 300px; overflow-y: auto;"><table class="table table-sm table-hover"><thead><tr class="table-light"><th>Mapel TES BCKS</th><th>Nama</th><th>Skor</th></tr></thead><tbody id="dash-student-tbody"></tbody></table></div></div></div></div>`;
         }
 
         let schoolWidgetClass = isGuru ? `col-md-5` : `col-md-12`;
@@ -517,7 +517,7 @@ function renderContent(page) {
         let uniqueMapel = [...new Set(examsData.map(e => e.Mapel))];
         h = `<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">`;
         if(!isGuru) h += `<button class="btn btn-primary shadow-sm px-4 py-2 rounded-pill fw-bold" onclick="openExamModal()"><i class="fas fa-plus me-2"></i>Buat Jadwal Baru</button>`;
-        else h += `<div><h5 class="fw-bold text-primary mb-0"><i class="fas fa-folder-open me-2"></i>Daftar Bank Soal CAT BCKS</h5><p class="small text-muted m-0">Guru hanya memiliki akses mengunduh soal untuk cetak PDF.</p></div>`;
+        else h += `<div><h5 class="fw-bold text-primary mb-0"><i class="fas fa-folder-open me-2"></i>Daftar Bank Soal TES BCKS</h5><p class="small text-muted m-0">Guru hanya memiliki akses mengunduh soal untuk cetak PDF.</p></div>`;
         
         h += `<div class="d-flex gap-2 bg-white p-2 rounded-pill shadow-sm border"><select id="filter-mapel-ujian" class="form-select form-select-sm border-0 bg-transparent" onchange="filterAdminUjian()"><option value="">Semua Mapel</option>${uniqueMapel.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></div></div><div class="row g-4" id="admin-ujian-list">`;
              
@@ -526,7 +526,7 @@ function renderContent(page) {
         examsData.forEach(e => {
             let actionButtons = '';
             if (!isGuru) {
-                actionButtons = `<button class="btn btn-sm btn-outline-dark flex-fill rounded-pill fw-bold" onclick="openExamModal('${encodeURIComponent(JSON.stringify(e))}')"><i class="fas fa-cog"></i> Edit</button> <button class="btn btn-sm btn-outline-primary flex-fill rounded-pill fw-bold" onclick="manageQ('${e.ExamID}')"><i class="fas fa-list"></i> Soal CAT BCKS</button> <button class="btn btn-sm btn-danger rounded-circle px-2" onclick="delExam('${e.ExamID}')"><i class="fas fa-trash"></i></button>`;
+                actionButtons = `<button class="btn btn-sm btn-outline-dark flex-fill rounded-pill fw-bold" onclick="openExamModal('${encodeURIComponent(JSON.stringify(e))}')"><i class="fas fa-cog"></i> Edit</button> <button class="btn btn-sm btn-outline-primary flex-fill rounded-pill fw-bold" onclick="manageQ('${e.ExamID}')"><i class="fas fa-list"></i> Soal TES BCKS</button> <button class="btn btn-sm btn-danger rounded-circle px-2" onclick="delExam('${e.ExamID}')"><i class="fas fa-trash"></i></button>`;
             } else {
                 if (e.AllowDownloadQ === 'Yes') { actionButtons = `<button class="btn btn-success w-100 py-2 rounded-pill fw-bold shadow-sm" onclick="downloadAllQAdmin('${e.ExamID}')"><i class="fas fa-file-pdf me-2"></i> Download Soal Ini (PDF)</button>`; } 
                 else { actionButtons = `<div class="alert alert-light small m-0 p-2 text-center w-100 text-muted border rounded-pill"><i class="fas fa-lock me-1"></i>Akses Download Dikunci Admin</div>`; }
@@ -569,12 +569,12 @@ function renderContent(page) {
                 else if (currTimeStr < sesiStart) { btnState = 'disabled'; btnText = `<i class="fas fa-clock me-2"></i> MULAI JAM ${sesiStart}`; btnClass = 'btn-secondary'; }
                 else if (currTimeStr > sesiEnd) { btnState = 'disabled'; btnText = `<i class="fas fa-times-circle me-2"></i> SESI BERAKHIR`; btnClass = 'btn-danger'; }
 
-                h += `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden transition-hover"><div class="card-body p-4 text-center"><span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill mb-3 fw-bold">${e.Mapel}</span><h5 class="fw-bold text-dark mb-3">${e.Judul}</h5><p class="small text-muted mb-4"><i class="fas fa-stopwatch me-1"></i> Waktu CAT BCKS: <b>${e.Durasi} Menit</b></p><button class="btn ${btnClass} w-100 py-2 fw-bold rounded-pill shadow-sm" onclick="startExam('${e.ExamID}', '${e.Token || ''}')" ${btnState}>${btnText}</button></div></div></div>`;
+                h += `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden transition-hover"><div class="card-body p-4 text-center"><span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill mb-3 fw-bold">${e.Mapel}</span><h5 class="fw-bold text-dark mb-3">${e.Judul}</h5><p class="small text-muted mb-4"><i class="fas fa-stopwatch me-1"></i> Waktu TES BCKS: <b>${e.Durasi} Menit</b></p><button class="btn ${btnClass} w-100 py-2 fw-bold rounded-pill shadow-sm" onclick="startExam('${e.ExamID}', '${e.Token || ''}')" ${btnState}>${btnText}</button></div></div></div>`;
             });
         }
         h += '</div><h5 class="fw-bold mb-3 border-bottom pb-2 mt-5 text-primary"><i class="fas fa-history me-2"></i>Riwayat Ujian & Hasil</h5>';
         
-        if(historyData.length === 0) { h += '<p class="text-muted fst-italic ms-2">Anda belum menyelesaikan ujian CAT BCKS apa pun.</p>'; } 
+        if(historyData.length === 0) { h += '<p class="text-muted fst-italic ms-2">Anda belum menyelesaikan ujian TES BCKS apa pun.</p>'; } 
         else {
             h += `<div class="table-responsive bg-white rounded-4 shadow-sm p-3 border"><table class="table table-hover align-middle mb-0"><thead><tr><th>Tanggal & Waktu</th><th>Nama Ujian</th><th>Pengumuman Hasil</th><th>Aksi Lanjutan</th></tr></thead><tbody>`;
             historyData.forEach(r => { 
@@ -1293,7 +1293,7 @@ function printRecap(rid) {
   }
 
   let typeLabel = isSurvey ? 'Kuesioner Survei' : 'Ujian/Mapel';
-  let titleDetail = isSurvey ? 'Rincian Tanggapan Survei Karakter & Lingkungan' : 'Rincian Jawaban & Skor CAT BCKS';
+  let titleDetail = isSurvey ? 'Rincian Tanggapan Survei Karakter & Lingkungan' : 'Rincian Jawaban & Skor TES BCKS';
 
   let content = `
   <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom:2px solid #e2e8f0; padding-bottom:20px;">
@@ -1596,7 +1596,7 @@ function delExam(id){ Swal.fire({title:'Hapus Permanen?', icon:'warning', showCa
 
 function manageQ(id) { 
     activeExamId = id; 
-    $('#editor-q-title').html('<i class="fas fa-edit me-2"></i> Editor Pertanyaan CAT BCKS');
+    $('#editor-q-title').html('<i class="fas fa-edit me-2"></i> Editor Pertanyaan TES BCKS');
     $('#editor-tips').html('<i class="fas fa-lightbulb me-2"></i><b>Tips:</b> Gunakan tombol <b>Rumus</b> atau <b>Video</b> pada panel editor di bawah.');
     $('#modalQ').modal('show'); 
     loadQList(); 
@@ -1746,7 +1746,7 @@ return `
                     <input type="hidden" name="id" value="${q.QID || ''}">
                     <div class="row g-3 mb-4">
                         <div class="col-md-2"><label class="small fw-bold text-muted">Nomor Urut</label><input type="number" name="num" class="form-control bg-light border-0 rounded-3" value="${nomor}"></div>
-                        <div class="col-md-4"><label class="small fw-bold text-muted">Tipe Soal CAT BCKS</label>
+                        <div class="col-md-4"><label class="small fw-bold text-muted">Tipe Soal TES BCKS</label>
                             ${typeSelect}
                         </div>
                         ${katSelect}
@@ -2236,7 +2236,7 @@ function processSubmission(retryCount = 0) {
                 html: `<div class="mb-3 text-success" style="font-size: 5rem;"><i class="fas fa-check-circle"></i></div>
                        <h5 class="fw-bold">Jawaban Telah Terkirim ke Server</h5>
                        ${scoreHtml}
-                       <p class="text-muted mt-3">Terima kasih. Anda telah menyelesaikan ujian CAT BCKS.</p>`,
+                       <p class="text-muted mt-3">Terima kasih. Anda telah menyelesaikan ujian TES BCKS.</p>`,
                 confirmButtonText: 'KEMBALI KE BERANDA', confirmButtonColor: '#0f5132', allowOutsideClick: false, allowEscapeKey: false
             }).then(() => { 
                 $('#view-exam').addClass('hidden'); 
