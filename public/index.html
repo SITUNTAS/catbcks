@@ -707,7 +707,7 @@ function renderUserRows(data) {
     let h = '';
     
     if(!data || data.length === 0) {
-        h = `<tr><td colspan="${isAdmin ? 7 : (canEdit ? 6 : 5)}" class="text-center text-muted py-4">Data peserta tidak ditemukan.</td></tr>`;
+        h = `<tr><td colspan="${isAdmin ? 8 : (canEdit ? 7 : 6)}" class="text-center text-muted py-4">Data peserta tidak ditemukan.</td></tr>`;
     } else {
         data.forEach(u => {
             const safeData = encodeURIComponent(JSON.stringify(u));
@@ -716,21 +716,19 @@ function renderUserRows(data) {
             if (statusTampil === 'LULUS') bgStatus = 'success';
             if (statusTampil === 'TIDAK LULUS') bgStatus = 'danger';
             
-            let badgeJenis = '';
-            if (u.JenisPeserta && u.JenisPeserta === 'Khusus') {
-                badgeJenis = `<span class="badge bg-danger ms-2">Khusus</span>`;
-            }
+            // Lencana khusus dihapus agar tersamar
             
             h += `<tr>
                 ${isAdmin ? `<td><input type="checkbox" class="form-check-input check-user" value="${u.ID}" onchange="toggleBulkDeleteUsersBtn()"></td>` : ''}
                 <td>
                     <div class="d-flex align-items-center">
                         <img src="${u.Foto || 'https://via.placeholder.com/40'}" class="rounded-circle me-3 shadow-sm" width="40" height="40" style="object-fit:cover;">
-                        <span class="fw-bold text-dark">${u.Nama} ${badgeJenis}</span>
+                        <span class="fw-bold text-dark">${u.Nama}</span>
                     </div>
                 </td>
                 <td><span class="badge bg-${bgStatus}">${statusTampil}</span></td>
                 <td>${u.Username}</td>
+                <td><span class="badge bg-${String(u.Role).trim().toLowerCase()==='admin'?'danger':(String(u.Role).trim().toLowerCase()==='guru'?'warning text-dark':'primary')}">${u.Role}</span></td>
                 <td><span class="badge bg-secondary border shadow-sm">Sesi ${u.Sesi || '1'}</span></td>
                 <td>${u.Sekolah || '-'}</td>
                 ${canEdit ? `<td>
@@ -744,6 +742,21 @@ function renderUserRows(data) {
     $('#users-tbody').html(h);
     $('#check-all-users').prop('checked', false);
     if(isAdmin) toggleBulkDeleteUsersBtn();
+}
+
+function renderAdminUsersTable(data) {
+   const tbody = document.getElementById('tbodyUsers'); 
+   if(data.length === 0) {
+       tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+       return;
+   }
+   let html = '';
+   data.forEach(u => { 
+       let btnAksi = (u.role === 'Admin') ? '' : `<button class="btn btn-sm btn-warning" onclick="editUser('${u.row}','${u.nip}','${u.nik}','${u.nama}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="hapusUser('${u.row}')"><i class="fas fa-trash"></i></button>`; 
+       // Lencana khusus dihapus agar tersamar
+       html += `<tr><td>${u.role}</td><td>${u.nip}</td><td>${u.nik}</td><td>${u.nama}</td><td>${btnAksi}</td></tr>`; 
+   });
+   tbody.innerHTML = html;
 }
 
 function saveSessionsPage() {
