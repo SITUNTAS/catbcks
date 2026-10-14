@@ -685,6 +685,7 @@ function renderUsers(users) {
                             <th>Foto & Nama</th>
                             <th>Status</th>
                             <th>Username</th>
+                            <th>Akses Akun</th> <!-- Perbaikan: Header yang sebelumnya hilang -->
                             <th>Sesi</th>
                             <th>Sekolah</th>
                             ${canEdit ? '<th>Aksi</th>' : ''}
@@ -712,11 +713,20 @@ function renderUserRows(data) {
         data.forEach(u => {
             const safeData = encodeURIComponent(JSON.stringify(u));
             let statusTampil = u.Status || '-';
+            
+            // Perbaikan: Masking Teks "CAT BCKS" menjadi "TES BCKS"
+            if (statusTampil.includes('CAT BCKS')) {
+                statusTampil = statusTampil.replace('CAT BCKS', 'TES BCKS');
+            }
+
             let bgStatus = 'secondary';
             if (statusTampil === 'LULUS') bgStatus = 'success';
             if (statusTampil === 'TIDAK LULUS') bgStatus = 'danger';
             
-            // Lencana khusus dihapus agar tersamar
+            // Perbaikan: Masking "siswa" menjadi "Peserta" untuk tampilan UI
+            let rawRole = String(u.Role).trim().toLowerCase();
+            let displayRole = rawRole === 'siswa' ? 'Peserta' : (rawRole === 'admin' ? 'Admin' : 'Guru');
+            let badgeRole = rawRole === 'admin' ? 'danger' : (rawRole === 'guru' ? 'warning text-dark' : 'primary');
             
             h += `<tr>
                 ${isAdmin ? `<td><input type="checkbox" class="form-check-input check-user" value="${u.ID}" onchange="toggleBulkDeleteUsersBtn()"></td>` : ''}
@@ -728,7 +738,7 @@ function renderUserRows(data) {
                 </td>
                 <td><span class="badge bg-${bgStatus}">${statusTampil}</span></td>
                 <td>${u.Username}</td>
-                <td><span class="badge bg-${String(u.Role).trim().toLowerCase()==='admin'?'danger':(String(u.Role).trim().toLowerCase()==='guru'?'warning text-dark':'primary')}">${u.Role}</span></td>
+                <td><span class="badge bg-${badgeRole}">${displayRole}</span></td>
                 <td><span class="badge bg-secondary border shadow-sm">Sesi ${u.Sesi || '1'}</span></td>
                 <td>${u.Sekolah || '-'}</td>
                 ${canEdit ? `<td>
