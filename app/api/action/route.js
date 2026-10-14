@@ -262,7 +262,7 @@ export async function POST(req) {
        let finalScore = Math.round(rawTotalScore * 100) / 100;
 
        await turso.execute({ sql: "INSERT INTO Results (ResultID, SiswaID, ExamID, TotalNilai, Detail, Pelanggaran, WaktuSubmit) VALUES (?, ?, ?, ?, ?, ?, ?)", args: ['RES' + Date.now(), uid, eid, finalScore, JSON.stringify(detailLog), violations > 0 ? `Pelanggaran: ${violations}x` : "-", waktuSubmit] });
-       try { await turso.execute({ sql: "UPDATE Users SET Status='Selesai CAT BCKS', Terjawab=0 WHERE ID=?", args: [uid] }); } catch(e){}
+       try { await turso.execute({ sql: "UPDATE Users SET Status='Selesai TES BCKS', Terjawab=0 WHERE ID=?", args: [uid] }); } catch(e){}
        return NextResponse.json({ status: 'success', data: { score: finalScore } });
     }
 
