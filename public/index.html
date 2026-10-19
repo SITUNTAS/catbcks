@@ -2338,11 +2338,29 @@ function processSubmission(retryCount = 0) {
             $('body').removeClass('exam-mode'); 
             try { document.exitFullscreen().catch(()=>{}) } catch (e) {};
             
+            // CEK APAKAH TAMPILAN NILAI DIAKTIFKAN UNTUK UJIAN INI
+            let currentExam = null;
+            if (gData && gData.availableExams) {
+                currentExam = gData.availableExams.find(e => String(e.ExamID) === String(activeExamId));
+            }
+            let showStats = currentExam ? currentExam.ShowStats : 'No';
+            
+            // SIAPKAN ELEMEN NILAI JIKA DIIZINKAN ADMIN & DATA TERSEDIA
+            let scoreHtml = '';
+            if ((showStats === 'Yes' || showStats === 'Aktif') && res.data && res.data.score !== undefined) {
+                scoreHtml = `
+                <div class="alert alert-info mt-3 py-2 border-info border-2 shadow-sm">
+                    <h6 class="m-0 text-muted">Nilai Tersimpan Sebelumnya:</h6>
+                    <h2 class="fw-bold m-0 text-info" style="font-size: 3rem;">${res.data.score}</h2>
+                </div>`;
+            }
+            
             Swal.fire({
                 title: 'Perhatian!',
                 html: `<div class="mb-3 text-warning" style="font-size: 5rem;"><i class="fas fa-exclamation-triangle"></i></div>
                        <h5 class="fw-bold">Ujian Sudah Disubmit Sebelumnya</h5>
-                       <p class="text-muted mt-3">Sistem mendeteksi jawaban pertama telah tersimpan (dari perangkat lain atau sesi tab sebelumnya). Jawaban dari perangkat ini tidak disimpan untuk menghindari duplikasi.</p>`,
+                       ${scoreHtml}
+                       <p class="text-muted mt-3">Sistem mendeteksi jawaban pertama telah tersimpan (dari perangkat/tab lain). Data dan nilai Anda aman di server.</p>`,
                 confirmButtonText: 'KEMBALI KE BERANDA', confirmButtonColor: '#d33', allowOutsideClick: false, allowEscapeKey: false
             }).then(() => { 
                 $('#view-exam').addClass('hidden'); 
@@ -2350,15 +2368,7 @@ function processSubmission(retryCount = 0) {
                 loadPage('peserta-home'); 
             });
             
-        } else { 
-            Swal.fire('Gagal', res.msg || 'Terjadi kesalahan sistem.', 'error'); 
-        }
-    }).withFailureHandler((err) => {
-        if (retryCount < 3) { setTimeout(() => processSubmission(retryCount + 1), 3000); } 
-        else { examSubmitting = false; btn.prop('disabled', false).html(originalText); Swal.fire('Koneksi Terputus', 'Gagal menghubungi server.', 'error'); }
-    }).submitExam(user.ID, activeExamId, ans, violationCount, localTime);
-}
-
+        } else {
 function decodeHTML(htmlText) {
     let txt = document.createElement("textarea");
     txt.innerHTML = htmlText;
