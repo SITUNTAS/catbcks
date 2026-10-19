@@ -222,8 +222,25 @@ export async function POST(req) {
       return NextResponse.json({ status: 'success', data: cacheStore.examPack[eid].data, duration: cacheStore.examPack[eid].duration, judul: cacheStore.examPack[eid].judul, token: cacheStore.examPack[eid].token, randomQ: cacheStore.examPack[eid].randomQ });
     }
 
+// ... [Kode sebelumnya di dalam file route.js tetap sama] ...
+
     if (action === 'submitExam') {
        const uid = args[0]; const eid = args[1]; const answers = args[2]; const violations = args[3]; const waktuSubmit = args[4];
+       
+       // VALIDASI ANTI DOUBLE SUBMIT DARI PERANGKAT LAIN / TAB GANDA
+       const checkExist = await turso.execute({ 
+           sql: "SELECT 1 FROM Results WHERE SiswaID = ? AND ExamID = ? LIMIT 1", 
+           args: [uid, eid] 
+       });
+
+       if (checkExist.rows.length > 0) {
+           return NextResponse.json({ 
+               status: 'already_submitted', 
+               msg: 'Sistem mendeteksi Anda telah menyelesaikan ujian ini di perangkat atau sesi lain.' 
+           });
+       }
+       // ========================================================
+
        let rawTotalScore = 0; let detailLog = [];
 
        const qs = await turso.execute({ sql: "SELECT * FROM Questions WHERE ExamID=?", args:[eid] });
@@ -266,6 +283,7 @@ export async function POST(req) {
        return NextResponse.json({ status: 'success', data: { score: finalScore } });
     }
 
+// ... [Sisa kode di bawahnya tetap sama] ...
     if (action === 'getRecapList') {
       const [role, , sekolah] = args;
       let sql = `SELECT r.ResultID, r.TotalNilai, r.WaktuSubmit, r.Detail, r.SiswaID, r.ExamID, r.Pelanggaran, u.Nama AS NamaSiswa, u.Sekolah AS SekolahSiswa, u.Sesi AS SesiSiswa, e.Judul AS JudulUjian, e.Mapel AS Mapel, e.PembuatID AS PembuatID, e.ShowStats AS ShowStats, (SELECT Nama FROM Users WHERE ID = e.PembuatID) AS PembuatNama FROM Results r LEFT JOIN Users u ON r.SiswaID = u.ID LEFT JOIN Exams e ON r.ExamID = e.ExamID WHERE 1=1`;
