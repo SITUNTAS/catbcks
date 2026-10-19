@@ -227,18 +227,20 @@ export async function POST(req) {
     if (action === 'submitExam') {
        const uid = args[0]; const eid = args[1]; const answers = args[2]; const violations = args[3]; const waktuSubmit = args[4];
        
-       // VALIDASI ANTI DOUBLE SUBMIT DARI PERANGKAT LAIN / TAB GANDA
+      // VALIDASI ANTI DOUBLE SUBMIT DARI PERANGKAT LAIN / TAB GANDA
        const checkExist = await turso.execute({ 
-           sql: "SELECT 1 FROM Results WHERE SiswaID = ? AND ExamID = ? LIMIT 1", 
+           sql: "SELECT TotalNilai FROM Results WHERE SiswaID = ? AND ExamID = ? LIMIT 1", 
            args: [uid, eid] 
        });
 
        if (checkExist.rows.length > 0) {
            return NextResponse.json({ 
                status: 'already_submitted', 
-               msg: 'Sistem mendeteksi Anda telah menyelesaikan ujian ini di perangkat atau sesi lain.' 
+               msg: 'Sistem mendeteksi Anda telah menyelesaikan ujian ini di perangkat atau sesi lain.',
+               data: { score: checkExist.rows[0].TotalNilai } // MENGIRIMKAN NILAI YANG SUDAH TERSIMPAN
            });
        }
+       // ========================================================
        // ========================================================
 
        let rawTotalScore = 0; let detailLog = [];
