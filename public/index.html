@@ -2332,21 +2332,18 @@ function processSubmission(retryCount = 0) {
             });
             
 } else if (res.status === 'already_submitted') {
-            // LOGIKA BARU: Samarkan kiriman kedua agar terlihat SEPERTI KIRIMAN PERTAMA YANG SUKSES
-            // Backend tetap menolak duplikasi data, namun UI menampilkan notifikasi seolah sukses
+            // SAMARKAN SEBAGAI SUKSES UNTUK DOUBLE SUBMIT
             localStorage.removeItem('cbt_active_exam'); localStorage.removeItem(`ANS_${user.ID}_${activeExamId}`);
             
             $('body').removeClass('exam-mode'); 
             try { document.exitFullscreen().catch(()=>{}) } catch (e) {};
             
-            // CEK APAKAH TAMPILAN NILAI DIAKTIFKAN UNTUK UJIAN INI
             let currentExam = null;
             if (gData && gData.availableExams) {
                 currentExam = gData.availableExams.find(e => String(e.ExamID) === String(activeExamId));
             }
             let showStats = currentExam ? currentExam.ShowStats : 'No';
             
-            // TAMPILKAN NILAI DARI DATA KIRIMAN PERTAMA YANG DIAMBIL DARI DATABASE
             let scoreHtml = '';
             if ((showStats === 'Yes' || showStats === 'Aktif') && res.data && res.data.score !== undefined) {
                 scoreHtml = `
@@ -2356,7 +2353,6 @@ function processSubmission(retryCount = 0) {
                 </div>`;
             }
             
-            // SweetAlert dibuat SAMA PERSIS dengan status sukses normal (Warna Hijau & Centang)
             Swal.fire({
                 title: 'Ujian Selesai!',
                 html: `<div class="mb-3 text-success" style="font-size: 5rem;"><i class="fas fa-check-circle"></i></div>
@@ -2371,7 +2367,15 @@ function processSubmission(retryCount = 0) {
             });
             
         } else {
-function decodeHTML(htmlText) {
+            // BAGIAN INI WAJIB TETAP ADA UNTUK MENANGKAP ERROR LAINNYA
+            Swal.fire('Gagal', res.msg || 'Terjadi kesalahan sistem.', 'error'); 
+        }
+    }).withFailureHandler((err) => {
+        if (retryCount < 3) { setTimeout(() => processSubmission(retryCount + 1), 3000); } 
+        else { examSubmitting = false; btn.prop('disabled', false).html(originalText); Swal.fire('Koneksi Terputus', 'Gagal menghubungi server.', 'error'); }
+    }).submitExam(user.ID, activeExamId, ans, violationCount, localTime);
+    
+    function decodeHTML(htmlText) {
     let txt = document.createElement("textarea");
     txt.innerHTML = htmlText;
     return txt.value;
