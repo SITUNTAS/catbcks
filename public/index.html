@@ -2331,8 +2331,9 @@ function processSubmission(retryCount = 0) {
                 loadPage('peserta-home'); 
             });
             
-        } else if (res.status === 'already_submitted') {
-            // LOGIKA BARU: Jika backend mendeteksi sudah dikerjakan di perangkat lain
+} else if (res.status === 'already_submitted') {
+            // LOGIKA BARU: Samarkan kiriman kedua agar terlihat SEPERTI KIRIMAN PERTAMA YANG SUKSES
+            // Backend tetap menolak duplikasi data, namun UI menampilkan notifikasi seolah sukses
             localStorage.removeItem('cbt_active_exam'); localStorage.removeItem(`ANS_${user.ID}_${activeExamId}`);
             
             $('body').removeClass('exam-mode'); 
@@ -2345,23 +2346,24 @@ function processSubmission(retryCount = 0) {
             }
             let showStats = currentExam ? currentExam.ShowStats : 'No';
             
-            // SIAPKAN ELEMEN NILAI JIKA DIIZINKAN ADMIN & DATA TERSEDIA
+            // TAMPILKAN NILAI DARI DATA KIRIMAN PERTAMA YANG DIAMBIL DARI DATABASE
             let scoreHtml = '';
             if ((showStats === 'Yes' || showStats === 'Aktif') && res.data && res.data.score !== undefined) {
                 scoreHtml = `
-                <div class="alert alert-info mt-3 py-2 border-info border-2 shadow-sm">
-                    <h6 class="m-0 text-muted">Nilai Tersimpan Sebelumnya:</h6>
-                    <h2 class="fw-bold m-0 text-info" style="font-size: 3rem;">${res.data.score}</h2>
+                <div class="alert alert-success mt-3 py-2 border-success border-2 shadow-sm">
+                    <h6 class="m-0 text-muted">Nilai Akhir Anda:</h6>
+                    <h2 class="fw-bold m-0 text-success" style="font-size: 3rem;">${res.data.score}</h2>
                 </div>`;
             }
             
+            // SweetAlert dibuat SAMA PERSIS dengan status sukses normal (Warna Hijau & Centang)
             Swal.fire({
-                title: 'Perhatian!',
-                html: `<div class="mb-3 text-warning" style="font-size: 5rem;"><i class="fas fa-exclamation-triangle"></i></div>
-                       <h5 class="fw-bold">Ujian Sudah Disubmit Sebelumnya</h5>
+                title: 'Ujian Selesai!',
+                html: `<div class="mb-3 text-success" style="font-size: 5rem;"><i class="fas fa-check-circle"></i></div>
+                       <h5 class="fw-bold">Jawaban Telah Terkirim ke Server</h5>
                        ${scoreHtml}
-                       <p class="text-muted mt-3">Sistem mendeteksi jawaban pertama telah tersimpan (dari perangkat/tab lain). Data dan nilai Anda aman di server.</p>`,
-                confirmButtonText: 'KEMBALI KE BERANDA', confirmButtonColor: '#d33', allowOutsideClick: false, allowEscapeKey: false
+                       <p class="text-muted mt-3">Terima kasih. Anda telah menyelesaikan ujian TES BCKS.</p>`,
+                confirmButtonText: 'KEMBALI KE BERANDA', confirmButtonColor: '#0f5132', allowOutsideClick: false, allowEscapeKey: false
             }).then(() => { 
                 $('#view-exam').addClass('hidden'); 
                 $('#view-dashboard').removeClass('hidden'); 
