@@ -12,9 +12,7 @@ export default function Page() {
   const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
   const [sessions, setSessions] = useState([
     { SesiID: '1', JamMulai: '07:30', JamSelesai: '09:00' },
-    { SesiID: '2', JamMulai: '09:30', JamSelesai: '11:00' },
-    { SesiID: '3', JamMulai: '11:30', JamSelesai: '13:00' },
-    { SesiID: '4', JamMulai: '13:30', JamSelesai: '15:00' }
+    { SesiID: '2', JamMulai: '09:30', JamSelesai: '11:00' }
   ]);
   
   const TARGET_DATE = new Date("2026-10-15T07:30:00").getTime();
