@@ -882,7 +882,71 @@ function downloadUserTemplate() {
     const wsData = [{ "Nama": "Peserta Contoh", "Username": "peserta01", "Password": "password123", "Role": "siswa", "Sesi": "1", "Jenis_Peserta": "Umum", "Sekolah": "SD/MI Contoh", "TglLahir": "2010-05-14" }];
     const ws = XLSX.utils.json_to_sheet(wsData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template_Data_Peserta"); XLSX.writeFile(wb, "Template_Upload_Peserta.xlsx");
 }
+function handleUploadUsersExcel(e) {
+    const file = e.target.files[0]; 
+    if(!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            const data = evt.target.result;
+            const workbook = XLSX.read(data, {type: 'binary'});
+            const sheetName = workbook.SheetNames[0];
+            const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+            
+            // Mapping data sesuai dengan kolom template Excel
+            let formattedData = json.map(row => {
+                return {
+                    id: 'U' + Date.now() + Math.floor(Math.random() * 10000),
+                    nama: row['Nama'] || '',
+                    username: String(row['Username'] || ''),
+                    password: String(row['Password'] || ''),
+                    role: row['Role'] || 'siswa',
+                    sesi: String(row['Sesi'] || '1'),
+                    jenis: row['Jenis_Peserta'] || 'Umum',
+                    sekolah: row['Sekolah'] || '',
+                    tglLahir: row['TglLahir'] || '',
+                    foto: '' // Foto diupload terpisah
+                };
+            }).filter(u => u.username !== '' && u.nama !== ''); // Abaikan baris kosong
 
+            if(formattedData.length === 0) return Swal.fire('Error', 'Data Excel kosong atau format tidak sesuai template.', 'error');
+            
+            Swal.fire({
+                title: `Upload ${formattedData.length} Peserta?`,
+                text: "Pastikan format Excel sudah sesuai dengan template.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Upload Sekarang',
+                cancelButtonText: 'Batal'
+            }).then(async (r) => {
+                if(r.isConfirmed) {
+                    showLoad(true);
+                    let successCount = 0;
+                    
+                    // Looping upload ke backend satu per satu
+                    for(let i = 0; i < formattedData.length; i++) {
+                        await new Promise(resolve => {
+                            google.script.run
+                                .withSuccessHandler(() => { successCount++; resolve(); })
+                                .withFailureHandler(() => resolve())
+                                .adminManageUser('save', formattedData[i]);
+                        });
+                    }
+                    
+                    showLoad(false);
+                    Swal.fire('Selesai', `Berhasil mengupload ${successCount} data peserta.`, 'success');
+                    loadPage('admin-users'); // Refresh tabel
+                }
+            });
+        } catch (error) {
+            Swal.fire('Error', 'Gagal memproses file Excel. Pastikan file tidak corrupt.', 'error');
+        }
+    };
+    
+    reader.readAsBinaryString(file);
+    e.target.value = ''; // Reset form input agar bisa upload file yang sama lagi jika perlu
+}
 function getKopHTML(title) {
     return `<div class="kop" style="display: flex; align-items: center; justify-content: center; border-bottom: 4px solid #064e3b; padding-bottom: 20px; margin-bottom: 30px; position: relative; text-align: center;"><img src="https://lh3.googleusercontent.com/d/1IWNmSpAZfMOYOU0uNK2RIiD83Zr63ye9" alt="Logo" style="width: 100px; height: 100px; position: absolute; left: 10px; top: 0;"><div style="width: 100%; padding-left: 90px;"><h2 style="margin: 0; font-size: 26px; color: #064e3b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TES BCKS - KABUPATEN TANGERANG</h2><p style="margin: 0; color: #64748b; font-size: 14px; font-style: italic;">Aplikasi Computer Based Test (CBT) Inovasi - ${title}</p></div></div>`;
 }
